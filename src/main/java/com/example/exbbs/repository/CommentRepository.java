@@ -31,12 +31,12 @@ public class CommentRepository {
         .addValue("name", comment.getName())
         .addValue("content", comment.getContent())
         .addValue("articleId", comment.getArticleId());
-        template.query(sql, param, COMMENT_ROW_MAPPER);
+        template.update(sql, param);
     }
     public void deleteByArticleId(int articleId) {
         String sql = "DELETE FROM comments WHERE article_id = :articleId";
         SqlParameterSource param = new MapSqlParameterSource()
         .addValue("articleId", articleId);
-        template.query(sql, param, COMMENT_ROW_MAPPER);
+        template.update(sql, param);
     }
 }

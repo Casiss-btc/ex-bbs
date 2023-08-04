@@ -29,20 +29,24 @@ public class ArticleController {
     @Autowired
     CommentRepository commentRepository;
     @GetMapping()
-    public String index(ArticleForm form) {
+    public String index(ArticleForm aForm, CommentForm cForm) {
         List<Article> articles = articleRepository.findAll();
+        for (Article article:articles) {
+            Integer articleId = article.getId();
+            List<Comment> comments = commentRepository.findByArticleId(articleId);
+            article.setCommentList(comments);
+        }
         application.setAttribute("articles", articles);
         return "form";
     }
     @PostMapping("/insert-article")
     public String insertArticle(ArticleForm form) {
+        System.out.println("aaaaaa"+form);
         Article article = new Article();
         article.setName(form.getName());
         article.setContent(form.getContent());
         articleRepository.insert(article);
-        List<Article> articles = articleRepository.findAll();
-        application.setAttribute("articles", articles);
-        return "form";
+        return "redirect:/article";
     }
     @PostMapping("/insert-comment")
     public String insertComment(CommentForm form) {
@@ -52,11 +56,16 @@ public class ArticleController {
         Integer articleId = Integer.valueOf(form.getArticleId());
         comment.setArticleId(articleId);
         commentRepository.insert(comment);
-        return "form";
+        return "redirect:/article";
     }
     @PostMapping("/delete-article")
-    public String deleteArticle(ArticleForm aForm, CommentForm cForm) {
+    public String deleteArticle(CommentForm form) {
+        System.out.println(form);
+        Integer articleId = Integer.valueOf(form.getArticleId());;
+        commentRepository.deleteByArticleId(articleId);
+        Integer id = articleId;
+        articleRepository.deleteById(id); 
         
-        return "form";
+        return "redirect:/article";
     }
 }
