@@ -6,8 +6,10 @@
     <title>Document</title>
 </head>
 <body>
-    <form th:action="@{/article/insert-article}" th:object="${articleForm}" method="post">
+    <form th:action="@{/article2/insert-article}" th:object="${articleForm}" method="post">
+        <div th:errors="*{name}" style="color:red">エラー</div>
         投稿者名：<input type="text" th:field="*{name}"/><br>
+        <div th:errors="*{content}" style="color:red">エラー</div>
         投稿内容：<textarea rows="5" cols="40" th:field="*{content}"></textarea><br>
         <button>記事投稿</button>
         <hr>
@@ -16,7 +18,7 @@
         <span th:text="'投稿ID：'+${article.id}"></span><br>
         <span th:text="'投稿者名：'+${article.name}"></span><br>
         <span th:text="'投稿内容：'+${article.content}"></span><br>
-        <form th:action="@{/article/delete-article}" th:object="${commentForm}" method="post">
+        <form th:action="@{/article2/delete-article}" th:object="${commentForm}" method="post">
             <input type="hidden" th:value="${article.id}" name="articleId"/>
             <button>記事削除</button><br>
         </form>    
@@ -25,8 +27,10 @@
             <span th:text="コメント内容："></span><br>
             <span th:text="${comment.content}"></span><br>
         </form>
-        <form th:action="@{/article/insert-comment}" th:object="${commentForm}" method="post">
+        <form th:action="@{/article2/insert-comment}" th:object="${commentForm}" method="post">
+            <div th:if="*{articleId}==${article.id}" th:errors="*{name}" style="color:red">エラー</div>
             コメント者名：<input type="text" th:field="*{name}"/><br>
+            <div th:if="*{articleId}==${article.id}" th:errors="*{content}" style="color:red">エラー</div>
             コメント内容：<textarea rows="5" cols="40" th:field="*{content}"></textarea><br>
             <input type="hidden" th:value="${article.id}" name="articleId"/>
             <button>コメント投稿</button>

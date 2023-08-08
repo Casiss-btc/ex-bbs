@@ -1,8 +1,12 @@
 package com.example.exbbs.form;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class CommentForm {
     private String articleId;
+    @NotBlank(message="名前は必須です")
     private String name;
+    @NotBlank(message="コンテンツは必須です")
     private String content;
     public String getArticleId() {
         return articleId;

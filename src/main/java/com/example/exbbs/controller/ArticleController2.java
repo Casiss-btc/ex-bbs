@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +32,7 @@ public class ArticleController2 {
     @Autowired
     CommentRepository commentRepository;
     @GetMapping()
-    public String index(ArticleForm aForm, CommentForm cForm) {
+    public String index(Model model, ArticleForm aForm, CommentForm cForm) {
         List<Article> articles = articleRepository.findJoinAll();
         for (Article article:articles) {
             Integer articleId = article.getId();
@@ -40,28 +43,55 @@ public class ArticleController2 {
         return "form2";
     }
     @PostMapping("/insert-article")
-    public String insertArticle(ArticleForm form) {
+    public String insertArticle(
+    @Validated ArticleForm aForm
+    , BindingResult result
+    , CommentForm cForm
+    , Model model) {
+        if(result.hasErrors()) {
+            return index(model, aForm, cForm);
+        }
         Article article = new Article();
-        article.setName(form.getName());
-        article.setContent(form.getContent());
+        article.setName(aForm.getName());
+        article.setContent(aForm.getContent());
         articleRepository.insert(article);
         return "redirect:/article2";
     }
     @PostMapping("/insert-comment")
-    public String insertComment(CommentForm form) {
+    public String insertComment(
+    ArticleForm aForm
+    , @Validated CommentForm cForm
+    , BindingResult result
+    , Model model) {
+        if(result.hasErrors()) {
+            return index(model, aForm, cForm);
+        }
         Comment comment = new Comment();
-        comment.setName(form.getName());
-        comment.setContent(form.getContent());
-        Integer articleId = Integer.valueOf(form.getArticleId());
+        comment.setName(cForm.getName());
+        comment.setContent(cForm.getContent());
+        Integer articleId = Integer.valueOf(cForm.getArticleId());
         comment.setArticleId(articleId);
         commentRepository.insert(comment);
         return "redirect:/article2";
     }
-    @PostMapping("/delete-article")
+    /**
+     * @PostMapping("/delete-article")
     public String deleteArticle(CommentForm form) {
         System.out.println(form);
         Integer articleId = Integer.valueOf(form.getArticleId());;
         commentRepository.deleteByArticleId(articleId);
+        Integer id = articleId;
+        articleRepository.deleteById(id); 
+        
+        return "redirect:/article2";
+    }
+     * @param form
+     * @return
+     */
+    @PostMapping("/delete-article")
+    public String deleteArticle(CommentForm form) {
+        System.out.println(form);
+        Integer articleId = Integer.valueOf(form.getArticleId());;
         Integer id = articleId;
         articleRepository.deleteById(id); 
         
