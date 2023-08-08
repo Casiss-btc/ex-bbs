@@ -25,6 +25,21 @@ public class CommentRepository {
         List<Comment> comments = template.query(sql, param, COMMENT_ROW_MAPPER);
         return comments;
     }
+    public List<Comment> findJoinByArticledId(int articleId) {
+        String sql = """
+            SELECT comments.id, 
+            comments.name, 
+            comments.content, 
+            comments.article_id 
+            FROM articles JOIN comments 
+            ON articles.id = comments.article_id 
+            WHERE article_id = :articleId
+                """;
+        SqlParameterSource param = new MapSqlParameterSource()
+        .addValue("articleId", articleId);
+        List<Comment> comments = template.query(sql, param, COMMENT_ROW_MAPPER);
+        return comments;
+    }
     public void insert(Comment comment) {
         String sql = "INSERT INTO comments (name, content, article_id) VALUES (:name, :content, :articleId)";
         SqlParameterSource param = new MapSqlParameterSource()

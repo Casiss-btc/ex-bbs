@@ -25,6 +25,16 @@ public class ArticleRepository {
         List<Article> articles = template.query(sql, ARTICLE_ROW_MAPPER);
         return articles;
     }
+    public List<Article> findJoinAll() {
+        String sql = "SELECT "+
+        "articles.id AS id, "+
+        "articles.name AS name, "+
+        "articles.content AS content"+
+        " FROM articles";
+        
+        List<Article> articles = template.query(sql, ARTICLE_ROW_MAPPER);
+        return articles;
+    }
     public void insert(Article article) {
         String sql = "INSERT INTO articles (name, content) VALUES (:name, :content)";
         SqlParameterSource param = new MapSqlParameterSource()
@@ -33,6 +43,12 @@ public class ArticleRepository {
         template.update(sql, param);
     }
     public void deleteById(int id) {
+        String sql = "DELETE FROM articles WHERE id = :id";
+        SqlParameterSource param = new MapSqlParameterSource()
+        .addValue("id", id);
+        template.update(sql, param);
+    }
+    public void deleteJoinById(int id) {
         String sql = "DELETE FROM articles WHERE id = :id";
         SqlParameterSource param = new MapSqlParameterSource()
         .addValue("id", id);
